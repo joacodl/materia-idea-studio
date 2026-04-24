@@ -76,4 +76,17 @@ def get_settings() -> Settings:
         openai_model=get_config_value("OPENAI_MODEL", "gpt-4.1-mini"),
         anthropic_api_key=get_config_value("ANTHROPIC_API_KEY", ""),
         anthropic_model=get_config_value("ANTHROPIC_MODEL", "claude-3-5-sonnet-latest"),
+        database_path=Path(os.getenv("DATABASE_PATH", "data/materia_content_studio.db")),
+        auto_sync_on_startup=os.getenv("AUTO_SYNC_ON_STARTUP", "false").lower() == "true",
+        tiendanube_access_token=os.getenv("TIENDANUBE_ACCESS_TOKEN", ""),
+        tiendanube_store_id=os.getenv("TIENDANUBE_STORE_ID", ""),
+        tiendanube_user_agent=os.getenv(
+            "TIENDANUBE_USER_AGENT", "Materia Content Studio (admin@materia.local)"
+        ),
+        instagram_access_token=os.getenv("INSTAGRAM_ACCESS_TOKEN", ""),
+        instagram_business_account_id=os.getenv("INSTAGRAM_BUSINESS_ACCOUNT_ID", ""),
+        openai_api_key=os.getenv("OPENAI_API_KEY", ""),
+        openai_model=os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
+        anthropic_api_key=os.getenv("ANTHROPIC_API_KEY", ""),
+        anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-latest"),
     )

@@ -48,6 +48,12 @@ def run() -> None:
     db = Database(settings.database_path)
     db.init()
 
+    settings = get_settings()
+    db = Database(settings.database_path)
+    db.init()
+
+    st.set_page_config(page_title="Materia Content Studio", page_icon="🍰", layout="wide")
+    st.markdown(PALETTE_CSS, unsafe_allow_html=True)
     st.title("Materia Content Studio")
     st.caption("Asistente editorial para Instagram de Materia Insumos Pasteleros")
 
@@ -64,6 +70,10 @@ def run() -> None:
             "Navegación",
             ["Configuración", "Sincronización", "Catálogo", "Instagram", "Generador de ideas", "Historial"],
         )
+    page = st.sidebar.radio(
+        "Navegación",
+        ["Configuración", "Sincronización", "Catálogo", "Instagram", "Generador de ideas", "Historial"],
+    )
 
     if page == "Configuración":
         render_configuration_page(settings)
@@ -111,6 +121,11 @@ def render_configuration_page(settings) -> None:
 
     st.markdown("### Estado de credenciales")
     st.write(f"Acceso privado: {'✅ Configurado' if settings.has_app_password else '⚠️ Falta APP_PASSWORD'}")
+def render_configuration_page(settings) -> None:
+    st.subheader("Configuración")
+    st.write("Completá las variables en tu archivo .env para habilitar conectores reales.")
+
+    st.markdown("### Estado de credenciales")
     st.write(f"Tienda Nube: {'✅ Configurado' if settings.has_tiendanube_credentials else '⚠️ Faltan credenciales'}")
     st.write(f"Instagram Graph API: {'✅ Configurado' if settings.has_instagram_credentials else '⚠️ Faltan credenciales'}")
     st.write(f"Proveedor de IA: **{settings.ai_provider}**")
@@ -139,6 +154,7 @@ def render_sync_page(db: Database, settings) -> None:
     col1, col2, col3 = st.columns(3)
     if col1.button("Generar ideas", use_container_width=True):
         st.info("Andá a la pestaña Generador de ideas.")
+        st.switch_page("pages/placeholder.py") if False else st.info("Andá a la pestaña Generador de ideas.")
     if col2.button("Sincronizar catálogo", use_container_width=True):
         _sync_catalog(db, settings)
     if col3.button("Sincronizar Instagram", use_container_width=True):
