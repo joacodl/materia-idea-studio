@@ -5,6 +5,9 @@ from pathlib import Path
 from pypdf import PdfReader
 
 
+class BrandManualParser:
+    @staticmethod
+    def parse_file(path: Path) -> str:
 class BrandManualService:
     def __init__(self, storage_path: Path):
         self.storage_path = storage_path

@@ -10,6 +10,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+DEFAULT_DB_PATH = Path("data/materia_content_studio.db")
+DEFAULT_UPLOADS_PATH = Path("data/uploads")
+DEFAULT_BRAND_MANUAL_PATH = Path("data/brand_manual")
+
+
 def _get_streamlit_secret(key: str) -> str:
     try:
         import streamlit as st
@@ -26,6 +31,11 @@ def get_config_value(key: str, default: str = "") -> str:
 
 @dataclass(slots=True)
 class Settings:
+    app_password: str
+    store_base_url: str
+    database_path: Path
+    uploads_path: Path
+    brand_manual_path: Path
     database_path: Path
     auto_sync_on_startup: bool
     app_password: str
@@ -62,6 +72,11 @@ class Settings:
 
 def get_settings() -> Settings:
     return Settings(
+        app_password=get_config_value("APP_PASSWORD", ""),
+        store_base_url=get_config_value("STORE_BASE_URL", "https://www.materiainsumos.com.ar"),
+        database_path=DEFAULT_DB_PATH,
+        uploads_path=DEFAULT_UPLOADS_PATH,
+        brand_manual_path=DEFAULT_BRAND_MANUAL_PATH,
         database_path=Path(get_config_value("DATABASE_PATH", "data/materia_content_studio.db")),
         auto_sync_on_startup=get_config_value("AUTO_SYNC_ON_STARTUP", "false").lower() == "true",
         app_password=get_config_value("APP_PASSWORD", ""),
