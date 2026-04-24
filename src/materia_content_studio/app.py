@@ -37,6 +37,17 @@ h1, h2, h3 {
 
 
 def run() -> None:
+    st.set_page_config(page_title="Materia Content Studio", page_icon="🍰", layout="wide")
+    st.markdown(PALETTE_CSS, unsafe_allow_html=True)
+
+    settings = get_settings()
+
+    if not _authenticate(settings.app_password):
+        return
+
+    db = Database(settings.database_path)
+    db.init()
+
     settings = get_settings()
     db = Database(settings.database_path)
     db.init()
@@ -51,6 +62,14 @@ def run() -> None:
         _sync_instagram(db, settings)
         st.session_state["auto_synced"] = True
 
+    with st.sidebar:
+        if st.button("Cerrar sesión", use_container_width=True):
+            st.session_state["authenticated"] = False
+            st.rerun()
+        page = st.radio(
+            "Navegación",
+            ["Configuración", "Sincronización", "Catálogo", "Instagram", "Generador de ideas", "Historial"],
+        )
     page = st.sidebar.radio(
         "Navegación",
         ["Configuración", "Sincronización", "Catálogo", "Instagram", "Generador de ideas", "Historial"],
@@ -70,6 +89,38 @@ def run() -> None:
         render_history_page(db)
 
 
+def _authenticate(app_password: str) -> bool:
+    st.title("Materia Content Studio")
+    st.caption("Acceso privado")
+
+    if not app_password:
+        st.error("Falta configurar APP_PASSWORD en variables de entorno o secretos de Streamlit Cloud.")
+        st.stop()
+
+    if st.session_state.get("authenticated"):
+        return True
+
+    with st.form("login_form"):
+        password_input = st.text_input("Contraseña", type="password")
+        submitted = st.form_submit_button("Ingresar")
+
+    if submitted:
+        if password_input == app_password:
+            st.session_state["authenticated"] = True
+            st.success("Acceso concedido.")
+            st.rerun()
+        st.error("Contraseña incorrecta.")
+
+    st.info("Ingresá la contraseña para continuar.")
+    return False
+
+
+def render_configuration_page(settings) -> None:
+    st.subheader("Configuración")
+    st.write("Completá variables de entorno (local) o Secrets (cloud) para habilitar conectores reales.")
+
+    st.markdown("### Estado de credenciales")
+    st.write(f"Acceso privado: {'✅ Configurado' if settings.has_app_password else '⚠️ Falta APP_PASSWORD'}")
 def render_configuration_page(settings) -> None:
     st.subheader("Configuración")
     st.write("Completá las variables en tu archivo .env para habilitar conectores reales.")
@@ -102,6 +153,7 @@ def render_sync_page(db: Database, settings) -> None:
 
     col1, col2, col3 = st.columns(3)
     if col1.button("Generar ideas", use_container_width=True):
+        st.info("Andá a la pestaña Generador de ideas.")
         st.switch_page("pages/placeholder.py") if False else st.info("Andá a la pestaña Generador de ideas.")
     if col2.button("Sincronizar catálogo", use_container_width=True):
         _sync_catalog(db, settings)
