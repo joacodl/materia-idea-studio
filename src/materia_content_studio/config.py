@@ -36,6 +36,38 @@ class Settings:
     database_path: Path
     uploads_path: Path
     brand_manual_path: Path
+    database_path: Path
+    auto_sync_on_startup: bool
+    app_password: str
+    tiendanube_access_token: str
+    tiendanube_store_id: str
+    tiendanube_user_agent: str
+    instagram_access_token: str
+    instagram_business_account_id: str
+    openai_api_key: str
+    openai_model: str
+    anthropic_api_key: str
+    anthropic_model: str
+
+    @property
+    def has_app_password(self) -> bool:
+        return bool(self.app_password)
+
+    @property
+    def has_tiendanube_credentials(self) -> bool:
+        return bool(self.tiendanube_access_token and self.tiendanube_store_id)
+
+    @property
+    def has_instagram_credentials(self) -> bool:
+        return bool(self.instagram_access_token and self.instagram_business_account_id)
+
+    @property
+    def ai_provider(self) -> str:
+        if self.openai_api_key:
+            return "openai"
+        if self.anthropic_api_key:
+            return "anthropic"
+        return "mock"
 
 
 def get_settings() -> Settings:
@@ -45,4 +77,31 @@ def get_settings() -> Settings:
         database_path=DEFAULT_DB_PATH,
         uploads_path=DEFAULT_UPLOADS_PATH,
         brand_manual_path=DEFAULT_BRAND_MANUAL_PATH,
+        database_path=Path(get_config_value("DATABASE_PATH", "data/materia_content_studio.db")),
+        auto_sync_on_startup=get_config_value("AUTO_SYNC_ON_STARTUP", "false").lower() == "true",
+        app_password=get_config_value("APP_PASSWORD", ""),
+        tiendanube_access_token=get_config_value("TIENDANUBE_ACCESS_TOKEN", ""),
+        tiendanube_store_id=get_config_value("TIENDANUBE_STORE_ID", ""),
+        tiendanube_user_agent=get_config_value(
+            "TIENDANUBE_USER_AGENT", "Materia Content Studio (admin@materia.local)"
+        ),
+        instagram_access_token=get_config_value("INSTAGRAM_ACCESS_TOKEN", ""),
+        instagram_business_account_id=get_config_value("INSTAGRAM_BUSINESS_ACCOUNT_ID", ""),
+        openai_api_key=get_config_value("OPENAI_API_KEY", ""),
+        openai_model=get_config_value("OPENAI_MODEL", "gpt-4.1-mini"),
+        anthropic_api_key=get_config_value("ANTHROPIC_API_KEY", ""),
+        anthropic_model=get_config_value("ANTHROPIC_MODEL", "claude-3-5-sonnet-latest"),
+        database_path=Path(os.getenv("DATABASE_PATH", "data/materia_content_studio.db")),
+        auto_sync_on_startup=os.getenv("AUTO_SYNC_ON_STARTUP", "false").lower() == "true",
+        tiendanube_access_token=os.getenv("TIENDANUBE_ACCESS_TOKEN", ""),
+        tiendanube_store_id=os.getenv("TIENDANUBE_STORE_ID", ""),
+        tiendanube_user_agent=os.getenv(
+            "TIENDANUBE_USER_AGENT", "Materia Content Studio (admin@materia.local)"
+        ),
+        instagram_access_token=os.getenv("INSTAGRAM_ACCESS_TOKEN", ""),
+        instagram_business_account_id=os.getenv("INSTAGRAM_BUSINESS_ACCOUNT_ID", ""),
+        openai_api_key=os.getenv("OPENAI_API_KEY", ""),
+        openai_model=os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
+        anthropic_api_key=os.getenv("ANTHROPIC_API_KEY", ""),
+        anthropic_model=os.getenv("ANTHROPIC_MODEL", "claude-3-5-sonnet-latest"),
     )
